@@ -82,15 +82,68 @@ h3{font:600 19px/1.2 var(--num);margin:0}
 .form .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .cta{width:100%;min-height:52px;border:0;border-radius:14px;background:var(--green);color:#fff;font:700 19px var(--num);cursor:pointer}
 .link{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:6px 0;font-size:14px}
-.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:20;max-width:90vw}
+.toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:20;max-width:90vw}
 details{border-top:1px solid var(--line);padding:10px 0}
 details summary{cursor:pointer;font-weight:600}
 table{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
 td{padding:6px 2px;border-top:1px solid var(--line)} td.n{text-align:right;font-family:var(--num);font-size:16px}
+/* list redesign: produce tiles, category chips, basket bar, swap sheet */
+.search{display:flex;align-items:center;gap:8px;background:var(--surface);border-radius:14px;padding:0 12px;margin-top:12px}
+.search svg{width:20px;height:20px;color:var(--muted);flex:none}
+.search input{flex:1;border:0;background:none;padding:13px 0;font-size:16px;color:var(--ink)}
+.search input:focus{outline:none}
+.chips{position:sticky;top:0;z-index:5;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:12px 16px;margin:0 -16px;background:var(--bg)}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;display:inline-flex;align-items:center;gap:6px;border:0;background:var(--surface);border-radius:999px;padding:8px 14px 8px 8px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.chip .e{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:15px;background:var(--tint)}
+.chip .c{color:var(--muted);font-weight:500}
+.chip.full .c{color:var(--green)}
+.sec{scroll-margin-top:72px;margin-top:10px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;padding:8px 2px}
+.row2{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--surface);border-radius:18px;padding:10px 12px 10px 10px;margin-bottom:8px;cursor:pointer;border:0;width:100%;text-align:left}
+.tile{position:relative;width:56px;height:56px;border-radius:16px;background:var(--tint);display:grid;place-items:center;font-size:30px;line-height:1}
+.tile .tick{position:absolute;inset:0;border-radius:16px;background:color-mix(in srgb,var(--green) 88%,transparent);display:grid;place-items:center;opacity:0;transform:scale(.6);transition:opacity .18s,transform .18s}
+.tile .tick svg{width:28px;height:28px;color:#fff}
+.row2.got .tile .tick{opacity:1;transform:none}
+.row2.got .nm{color:var(--muted);text-decoration:line-through}
+.row2.got .qp{background:none;color:var(--muted)}
+.nm{font:600 18px/1.15 var(--num)}
+.mt{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.35}
+.mt.mv{color:var(--yellow)}
+.qp{background:var(--raise);border-radius:12px;padding:8px 10px;text-align:right;min-width:68px;align-self:center}
+.qp b{display:block;font:700 20px/1 var(--num);white-space:nowrap}
+.qp small{display:block;font-size:12px;color:var(--muted);margin-top:3px;white-space:nowrap}
+.row2.out{opacity:.6}
+.row2.out .nm{text-decoration:line-through}
+.swapbtn{display:block;border:0;background:none;color:var(--muted);font-size:13px;font-weight:600;padding:6px 0 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;text-align:left}
+.row2.out .swapbtn{color:var(--red)}
+.done-h{margin-top:18px}
+.basket{position:fixed;left:0;right:0;bottom:calc(62px + env(safe-area-inset-bottom));z-index:9;padding:0 12px 8px;pointer-events:none}
+.basket .in{pointer-events:auto;max-width:536px;margin:0 auto;display:flex;align-items:center;gap:12px;background:var(--ink);color:var(--bg);border-radius:20px;padding:10px 10px 10px 12px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.ring{width:44px;height:44px;flex:none}
+.basket .t{flex:1;min-width:0}
+.basket .t b{display:block;font:700 19px/1.1 var(--num)}
+.basket .t span{font-size:13px;opacity:.75}
+.basket button{border:0;border-radius:14px;background:var(--green);color:#fff;font:700 16px var(--num);padding:12px 16px;cursor:pointer}
+.app.list{padding-bottom:calc(170px + env(safe-area-inset-bottom))}
+.sheet-bg{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:560px;border-radius:24px 24px 0 0;padding:10px 18px calc(20px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto;animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(30px);opacity:.6}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion: reduce){.sheet{animation:none}.tile .tick{transition:none}}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:4px auto 14px}
+.alts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 0}
+.alt{border:2px solid transparent;background:var(--surface);border-radius:18px;padding:12px;text-align:left;cursor:pointer}
+.alt.on{border-color:var(--green)}
+.alt .tile{width:48px;height:48px;font-size:26px;margin-bottom:8px}
+.alt b{display:block;font:600 17px/1.15 var(--num)}
+.alt span{font-size:13px;color:var(--muted)}
+.alt:disabled{opacity:.4;cursor:default}
+.cta2{width:100%;min-height:50px;border:0;border-radius:14px;background:var(--surface);font-weight:600;cursor:pointer;margin-top:6px}
 </style>
 </head>
 <body>
 <main class="app" id="app"></main>
+<div id="sheetBg" class="sheet-bg hide"><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Swap item"></div></div>
 <nav class="nav" aria-label="Sections"><div class="in">
   <button data-view="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h2l2 11h11l2-8H7"/><circle cx="9" cy="20" r="1.3"/><circle cx="17" cy="20" r="1.3"/></svg>List</button>
   <button data-view="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h6"/><circle cx="18" cy="16" r="3"/></svg>My plan</button>
@@ -179,10 +232,20 @@ const GROUPS = [
 ];
 const PANTRY = [{id:"honey", n:"Honey", why:"for low energy during training, or with black seed"},{id:"blackseed", n:"Black seed (حبة سوداء)", why:"a pinch with honey in the morning"},{id:"salt", n:"Salt", why:"for the cheese brine"}];
 
+const EMOJI = {tomato:"🍅",cucumber:"🥒",carrot:"🥕",lettuce:"🥬",pepper:"🫑",cherry:"🍅",zucchini:"🥒",eggplant:"🍆",okra:"🌿",cabbage:"🥬",greenbeans:"🫛",onion:"🧅",potato:"🥔",
+  banana:"🍌",orange:"🍊",pear:"🍐",apple:"🍎",mandarin:"🍊",grapes:"🍇",strawberry:"🍓",eggs:"🥚",foul:"🫘",chickenbreast:"🍗",chickenthigh:"🍗",fish:"🐟",meat:"🥩",
+  halloumi:"🧀",nabulsi:"🧀",akkawi:"🧀",feta:"🧀",milk:"🥛",laban:"🥛",yogurt:"🥛",brownbread:"🫓",toast:"🍞",rice:"🍚",pasta:"🍝",bulgur:"🌾",ricecakes:"🍘",
+  almonds:"🌰",walnuts:"🌰",cashews:"🥜",olives:"🫒",peanutbutter:"🥜",oliveoil:"🫒",honey:"🍯",blackseed:"🌱",salt:"🧂"};
+const CAT_STYLE = {"Vegetables":{e:"🥕",t:"#3FB27F"},"Fruit":{e:"🍊",t:"#F29D38"},"Protein & dairy":{e:"🥚",t:"#3D86F0"},"Bread & grains":{e:"🍞",t:"#D9A441"},"Nuts & extras":{e:"🌰",t:"#A0715A"},"Pantry":{e:"🧂",t:"#8F9BB0"},"Other":{e:"🛒",t:"#8F9BB0"}};
+const tint = c => `color-mix(in srgb, ${(CAT_STYLE[c] || CAT_STYLE.Other).t} 22%, var(--surface))`;
+const emo = (id, cat) => EMOJI[id] || (CAT_STYLE[cat] || CAT_STYLE.Other).e;
+
 /* ============ state ============ */
 const KEY = "groceries-v1";
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {} }catch(e){ return {} } }
-let st = Object.assign({days:7, training:4, perDay:{}, shares:{}, out:{}, got:{}, custom:[], hidden:{}, prices:true}, load());
+let st = Object.assign({days:7, training:4, perDay:{}, shares:{}, out:{}, got:{}, custom:[], hidden:{}, prices:true, moveTo:{}}, load());
+if(!st.moveTo) st.moveTo = {};
+let query = "";
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)) }catch(e){} }
 let view = "list";
 const $ = s => document.querySelector(s);
@@ -203,6 +266,8 @@ function allocate(g){
   const n = alloc.length;
   alloc.forEach((a,i) => {
     if(!st.out[a.it.id] || a.base <= 0) return;
+    const pick = alloc.find(b => b.it.id === st.moveTo[a.it.id] && !st.out[b.it.id]);
+    if(pick){ pick.moved += a.base; pick.from.push(a.it.n); return; }
     for(let k = 1; k < n; k++){
       const b = alloc[(i+k) % n];
       if(!st.out[b.it.id]){ b.moved += a.base; b.from.push(a.it.n); return; }
@@ -263,6 +328,7 @@ function rowPrice(r){
 /* ============ views ============ */
 function render(){
   document.querySelectorAll(".nav button").forEach(b => b.dataset.view === view ? b.setAttribute("aria-current","page") : b.removeAttribute("aria-current"));
+  $("#app").className = "app";
   if(view === "plan") renderPlan(); else if(view === "add") renderAdd(); else renderList();
   save();
 }
@@ -271,44 +337,63 @@ function renderList(){
   const active = rows.filter(r => !r.out);
   const got = active.filter(r => st.got[r.id]).length;
   const cost = active.reduce((a,r) => a + rowPrice(r), 0);
-  const unknown = active.filter(r => !rowPrice(r)).length;
-  const byCat = CATS.map(c => [c, rows.filter(r => r.cat === c)]).filter(([,l]) => l.length);
+  const q = query.trim().toLowerCase();
+  const match = r => !q || r.n.toLowerCase().includes(q) || r.cat.toLowerCase().includes(q);
+  const cats = [...CATS, "Other"].map(c => [c, rows.filter(r => r.cat === c)]).filter(([,l]) => l.length);
+  const todo = r => !st.got[r.id] || r.out;
+  const doneRows = rows.filter(r => !todo(r) && match(r));
+  const pct = active.length ? got/active.length : 0, C = 2*Math.PI*18;
+  $("#app").className = "app list";
   $("#app").innerHTML = `
-    <header class="top"><div class="brand">Groceries</div><a class="back" href="https://alhaiqi.github.io/gym/">Gym Log</a></header>
-    <section class="summary">
-      <div><div class="big">${got} / ${active.length}</div><div class="muted small">in the basket, for ${st.days} days</div></div>
-      ${st.prices ? `<div style="text-align:right"><div style="font:700 26px var(--num)">≈ $${cost.toFixed(2)}</div><div class="muted small">${unknown} item${unknown === 1 ? "" : "s"} unpriced</div></div>` : "<div></div>"}
-      <div class="meter"><i style="width:${active.length ? got/active.length*100 : 0}%"></i></div>
-    </section>
-    <div class="actions">
-      <button class="pill" data-act="share">Share list</button>
-      <button class="pill" data-act="newweek">New week</button>
-      <button class="pill" data-act="hidegot">${st.hideGot ? "Show checked" : "Hide checked"}</button>
-    </div>
-    ${byCat.map(([c, list]) => `<section class="panel"><div class="cat"><h2>${c}</h2><span class="muted small">${list.filter(r => st.got[r.id] && !r.out).length}/${list.filter(r => !r.out).length}</span></div>
-      ${list.filter(r => !(st.hideGot && st.got[r.id])).map(r => itemHTML(r)).join("") || '<p class="muted small" style="padding:8px 0">All checked.</p>'}
-    </section>`).join("")}
-    <section class="panel"><div class="cat"><h2>Check you still have</h2></div>
-      ${PANTRY.map(p => `<div class="item ${st.got[p.id] ? "got" : ""}"><button class="check" data-got="${p.id}" aria-label="Have ${esc(p.n)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg></button><div><div class="name">${esc(p.n)}</div><div class="sub">${esc(p.why)}</div></div><div></div></div>`).join("")}
-    </section>
-    <p class="muted small" style="margin:14px 2px 0">Prices are rough estimates from Lebanon's Ministry of Economy survey (Sept 2026) and supermarket sites. Vegetable shops are usually cheaper.</p>`;
+    <header class="top"><div><div class="brand">Groceries</div><div class="muted small">${st.days} days from your meal plan</div></div><a class="back" href="https://alhaiqi.github.io/gym/">Gym Log</a></header>
+    <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="search" placeholder="Find an item" value="${esc(query)}" aria-label="Find an item"></label>
+    <nav class="chips" aria-label="Categories">${cats.map(([c, l]) => { const a = l.filter(r => !r.out), g = a.filter(r => st.got[r.id]).length;
+      return `<button class="chip ${g === a.length && a.length ? "full" : ""}" data-jump="${esc(c)}" style="--tint:${tint(c)}"><span class="e">${(CAT_STYLE[c] || CAT_STYLE.Other).e}</span>${esc(c)} <span class="c">${g}/${a.length}</span></button>` }).join("")}</nav>
+    ${cats.map(([c, l]) => { const list = l.filter(r => todo(r) && match(r)); if(!list.length) return "";
+      return `<section class="sec" id="cat-${esc(c.replace(/\W+/g,"-"))}"><div class="sec-h"><h2>${esc(c)}</h2><span class="muted small">${list.filter(r => !r.out).length} left</span></div>${list.map(r => rowHTML(r)).join("")}</section>` }).join("")}
+    ${active.length && got === active.length ? `<div class="panel" style="text-align:center;padding:18px"><div style="font-size:40px">🧺</div><h2>Everything's in the basket</h2><p class="muted small" style="margin:4px 0 8px">Tap New week next time you shop.</p></div>` : ""}
+    ${!q ? `<section class="sec"><div class="sec-h"><h2>Check you still have</h2></div>${PANTRY.map(p => `<button class="row2 ${st.got[p.id] ? "got" : ""}" data-got="${p.id}" style="--tint:${tint("Pantry")}" aria-pressed="${!!st.got[p.id]}"><span class="tile">${emo(p.id,"Pantry")}<span class="tick">${TICK}</span></span><span><span class="nm">${esc(p.n)}</span><span class="mt" style="display:block">${esc(p.why)}</span></span><span></span></button>`).join("")}</section>` : ""}
+    ${doneRows.length ? `<section class="sec done-h"><div class="sec-h"><h2>In the basket</h2><span class="muted small">${doneRows.length}</span></div>${doneRows.map(r => rowHTML(r)).join("")}</section>` : ""}
+    <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="pill" data-act="newweek">New week</button><button class="pill" data-view="plan">Change my plan</button></div>
+    <p class="muted small" style="margin:14px 2px 0">Prices are rough estimates from Lebanon's Ministry of Economy survey (Sept 2026) and supermarket sites; vegetable shops are usually cheaper.</p>
+    <div class="basket"><div class="in">
+      <svg class="ring" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="18" fill="none" stroke="currentColor" stroke-opacity=".2" stroke-width="5"/><circle cx="22" cy="22" r="18" fill="none" stroke="var(--green)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-pct)).toFixed(1)}" transform="rotate(-90 22 22)"/></svg>
+      <div class="t"><b>${got} of ${active.length} in the basket</b><span>${st.prices ? "About $"+cost.toFixed(2)+" priced so far" : st.days+" days of food"}</span></div>
+      <button data-act="share">Share</button></div></div>`;
 }
-function itemHTML(r){
-  const q = rowQty(r), p = rowPrice(r);
-  const g0 = r.groups[0];
-  const why = r.custom ? (r.custom.note || "Added by you") : g0 && g0.items.length > 1 ? "For "+g0.name.toLowerCase()+(g0.perDay === "training" ? "" : g0.fixed != null ? "" : " ("+r1(perDayOf(g0))+" "+g0.unit+(perDayOf(g0) === 1 ? "" : "s")+" a day)") : (g0 ? g0.why : "");
-  const alt = r.groups.length && r.groups[0].items.length > 1 ? nextAlt(r) : "";
-  return `<div class="item ${st.got[r.id] && !r.out ? "got" : ""} ${r.out ? "out" : ""}">
-    <button class="check" data-got="${r.id}" aria-label="Got ${esc(r.n)}" ${r.out ? "disabled" : ""}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg></button>
-    <div><div class="name">${esc(r.n)}</div>
-      ${r.out ? `<div class="moved">Not available${alt ? ": moved to "+esc(alt) : ""}</div>` : r.from.length ? `<div class="moved">Includes the share of ${esc([...new Set(r.from)].join(", "))} (not available)</div>` : `<div class="sub">${esc(why)}</div>`}
-      ${(r.groups.length && r.groups[0].items.length > 1) || r.custom ? `<button class="out-btn" data-out="${r.outKey}">${r.out ? "Found it after all" : "Not available"}</button>` : ""}
-    </div>
-    <div class="qty">${r.out ? "" : esc(q.main)}${!r.out && (q.sub || (st.prices && p)) ? `<small>${esc(q.sub)}${q.sub && st.prices && p ? " · " : ""}${st.prices && p ? "$"+p.toFixed(2) : ""}</small>` : ""}</div>
+const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg>';
+function rowHTML(r){
+  const q = rowQty(r), p = rowPrice(r), g0 = r.groups[0];
+  const multi = (g0 && g0.items.length > 1) || r.custom;
+  const short = {salad:"Salads", stew:"Lunch stew", fruit:"Snacks", breakfast:"Breakfast", protein:"Lunch", cheese:"Dinner", laban:"After training", bread_d:"Dinner", carb:"Lunch", nuts:"Morning drink"};
+  const why = r.custom ? (r.custom.note || "Added by you") : g0 && g0.items.length > 1 ? (short[g0.id] || g0.name) : (g0 ? g0.why : "");
+  const alt = g0 && g0.items.length > 1 ? nextAlt(r) : "";
+  let meta = `<span class="mt">${esc(why)}</span>`;
+  if(r.out) meta = `<span class="mt mv">Not available${alt ? ", swapped for "+esc(alt) : ""}</span>`;
+  else if(r.from.length) meta = `<span class="mt mv">Covers ${esc([...new Set(r.from)].join(", ").toLowerCase())} too</span>`;
+  return `<div class="row2 ${st.got[r.id] && !r.out ? "got" : ""} ${r.out ? "out" : ""}" style="--tint:${tint(r.cat)}" ${r.out ? "" : `data-got="${r.id}" role="button" tabindex="0" aria-pressed="${!!st.got[r.id]}"`} aria-label="${esc(r.n)}, ${esc(q.main)}">
+    <span class="tile">${emo(r.custom ? "" : r.outKey, r.cat)}<span class="tick">${TICK}</span></span>
+    <span style="min-width:0"><span class="nm" style="display:block">${esc(r.n)}</span>${meta}${multi ? `<button class="swapbtn" data-swap="${r.outKey}">${r.out ? "Found it after all" : r.custom ? "Not available" : "Swap"}</button>` : ""}</span>
+    ${r.out ? "<span></span>" : `<span class="qp"><b>${esc(q.main)}</b>${q.sub || (st.prices && p) ? `<small>${esc(q.sub || "")}${q.sub && st.prices && p ? ", " : ""}${st.prices && p ? "$"+p.toFixed(2) : ""}</small>` : ""}</span>`}
   </div>`;
+}
+function swapSheet(itemId){
+  const g = GROUPS.find(g => g.items.some(x => x.id === itemId)), it = g.items.find(x => x.id === itemId);
+  const all = allocate(g), mine = all.find(a => a.it.id === itemId);
+  const servings = st.out[itemId] ? (all.find(a => a.from.includes(it.n)) ? (mine.base) : mine.base) : mine.total;
+  const cur = st.moveTo[itemId] || (nextAlt({groups:[g], outKey:itemId}) && g.items.find(x => x.n === nextAlt({groups:[g], outKey:itemId})).id);
+  $("#sheet").innerHTML = `<div class="grab"></div>
+    <h2>${emo(itemId)} No ${esc(it.n.toLowerCase())}?</h2>
+    <p class="muted small" style="margin:4px 0 0">Pick what to buy instead. The amount is worked out so you still get ${r1(servings)} ${esc(g.unit)}${servings === 1 ? "" : "s"} of ${esc(g.name.toLowerCase())} this week.</p>
+    <div class="alts">${g.items.filter(x => x.id !== itemId).map(x => { const extra = buyText(x, servings), dis = !!st.out[x.id];
+      return `<button class="alt ${x.id === cur && !dis ? "on" : ""}" data-moveto="${x.id}" data-from="${itemId}" ${dis ? "disabled" : ""}><span class="tile" style="--tint:${tint(g.cat)}">${emo(x.id, g.cat)}</span><b>${esc(x.n)}</b><span>${dis ? "Also not available" : "+ "+esc(extra.main)+(extra.sub ? " ("+esc(extra.sub.replace("≈ ",""))+")" : "")}</span></button>` }).join("")}</div>
+    <button class="cta" data-moveto="${cur || ""}" data-from="${itemId}" ${cur ? "" : "disabled"}>Swap</button>
+    <button class="cta2" data-close>Cancel</button>`;
+  $("#sheetBg").classList.remove("hide");
 }
 function nextAlt(r){
   const g = r.groups[0], i = g.items.findIndex(x => x.id === r.outKey);
+  const pick = g.items.find(x => x.id === st.moveTo[r.outKey] && !st.out[x.id]); if(pick) return pick.n;
   for(let k = 1; k < g.items.length; k++){ const b = g.items[(i+k) % g.items.length]; if(!st.out[b.id]) return b.n; }
   return "";
 }
@@ -357,9 +442,25 @@ function setKey(key, v){
 }
 function curVal(key){ const i = document.querySelector(`input[data-key="${key}"]`); return parseFloat(i.value) || 0 }
 document.addEventListener("click", ev => {
-  const t = ev.target.closest("button"); if(!t) return; const d = t.dataset;
+  if(ev.target === document.getElementById("sheetBg")){ closeSheet(); return; }
+  const t = ev.target.closest("button") || ev.target.closest("[data-got]"); if(!t) return; const d = t.dataset;
   if(d.view){ view = d.view; render(); window.scrollTo(0,0); return; }
   if(d.got){ st.got[d.got] = !st.got[d.got]; try{ navigator.vibrate && navigator.vibrate(15) }catch(e){} render(); return; }
+  if(d.swap){
+    if(st.out[d.swap]){ st.out[d.swap] = false; delete st.moveTo[d.swap]; render(); toast("Back on the list."); return; }
+    const isCustom = st.custom.some(c => c.id === d.swap);
+    if(isCustom){ st.out[d.swap] = true; render(); return; }
+    swapSheet(d.swap); return;
+  }
+  if(d.moveto !== undefined && d.from){
+    if(ev.target.closest(".alt")){ document.querySelectorAll(".alt").forEach(a => a.classList.toggle("on", a === t)); const c = document.querySelector(".sheet .cta"); c.dataset.moveto = d.moveto; c.disabled = false; return; }
+    if(!d.moveto) return;
+    st.out[d.from] = true; st.moveTo[d.from] = d.moveto; closeSheet();
+    const to = GROUPS.flatMap(g => g.items).find(x => x.id === d.moveto);
+    render(); toast("Swapped for "+(to ? to.n.toLowerCase() : "an alternative")+". Amount updated."); return;
+  }
+  if(d.jump){ const el = document.getElementById("cat-"+d.jump.replace(/\W+/g,"-")); if(el) el.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); return; }
+  if(t.hasAttribute("data-close")){ closeSheet(); return; }
   if(d.out){
     st.out[d.out] = !st.out[d.out];
     if(st.out[d.out]){
@@ -371,7 +472,7 @@ document.addEventListener("click", ev => {
   if(d.inc || d.dec){ const key = d.inc || d.dec; setKey(key, curVal(key) + (d.inc ? 1 : -1) * (+d.step)); render(); return; }
   if(d.delc){ st.custom = st.custom.filter(c => c.id !== d.delc); render(); return; }
   switch(d.act){
-    case "newweek": if(confirm("Start a new week? This unchecks everything and marks all items as available again.")){ st.got = {}; st.out = {}; render(); toast("New week. Everything's back on the list."); } break;
+    case "newweek": if(confirm("Start a new week? This unchecks everything and marks all items as available again.")){ st.got = {}; st.out = {}; st.moveTo = {}; render(); toast("New week. Everything's back on the list."); } break;
     case "hidegot": st.hideGot = !st.hideGot; render(); break;
     case "prices": st.prices = !st.prices; render(); break;
     case "reset": if(confirm("Reset amounts and mixes to the doctor's plan? Your extra items stay.")){ st.perDay = {}; st.shares = {}; st.days = 7; st.training = 4; render(); } break;
@@ -384,6 +485,9 @@ document.addEventListener("click", ev => {
     }
   }
 });
+function closeSheet(){ document.getElementById("sheetBg").classList.add("hide") }
+document.addEventListener("input", ev => { if(ev.target.id === "q"){ query = ev.target.value; const pos = ev.target.selectionStart; render(); const i = document.getElementById("q"); i.focus(); try{ i.setSelectionRange(pos,pos) }catch(e){} } });
+document.addEventListener("keydown", ev => { if(ev.key === "Escape") closeSheet(); if((ev.key === "Enter" || ev.key === " ") && ev.target.matches && ev.target.matches(".row2[data-got]")){ ev.preventDefault(); ev.target.click(); } });
 document.addEventListener("change", ev => { const k = ev.target.dataset && ev.target.dataset.key; if(k){ setKey(k, parseFloat(ev.target.value) || 0); render(); } });
 document.addEventListener("submit", ev => {
   if(ev.target.id !== "addForm") return; ev.preventDefault();
