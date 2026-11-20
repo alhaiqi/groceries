@@ -138,6 +138,27 @@ td{padding:6px 2px;border-top:1px solid var(--line)} td.n{text-align:right;font-
 .alt b{display:block;font:600 17px/1.15 var(--num)}
 .alt span{font-size:13px;color:var(--muted)}
 .alt:disabled{opacity:.4;cursor:default}
+.pricebtn{display:block;margin:4px 0 0 auto;border:0;background:none;padding:2px 0;color:var(--green);font:600 13px var(--txt);cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px;white-space:nowrap;text-align:right}
+.pricebtn i{display:block;font-style:normal;font-weight:500;color:var(--muted);text-decoration:none;font-size:12px}
+.pricebtn.add{color:var(--muted)}
+.pfield{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:16px;padding:6px 16px;margin-top:14px}
+.pfield input{flex:1;min-width:0;border:0;background:none;font:700 44px/1.1 var(--num);color:var(--ink);padding:6px 0}
+.pfield input:focus{outline:none}
+.pfield span{font:600 18px var(--num);color:var(--muted);white-space:nowrap}
+.pconv{min-height:24px;margin-top:10px;font-size:15px}
+.pconv b{display:block;color:var(--green);font:700 20px var(--num)}
+.pconv span{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.seg2 button{border:2px solid var(--line);background:var(--bg);border-radius:14px;padding:12px 8px;font-weight:600;cursor:pointer}
+.seg2 button[aria-pressed="true"]{border-color:var(--green);background:color-mix(in srgb,var(--green) 14%,var(--bg))}
+.fx{display:flex;align-items:center;gap:4px;font:600 16px var(--num)}
+.fx input{width:86px;text-align:center;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:8px 4px;font:600 17px var(--num)}
+.conv{border-top:1px solid var(--line);padding:12px 0 10px}
+.conv label{font-weight:600;display:block;margin-bottom:8px}
+.convrow{display:flex;align-items:center;gap:8px}
+.convrow input{width:120px;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px;font:700 22px var(--num)}
+.convrow span{font:600 18px var(--num);color:var(--muted)}
+.convrow b{font:700 24px var(--num);color:var(--green);margin-left:auto}
 .cta2{width:100%;min-height:50px;border:0;border-radius:14px;background:var(--surface);font-weight:600;cursor:pointer;margin-top:6px}
 </style>
 </head>
@@ -232,6 +253,31 @@ const GROUPS = [
 ];
 const PANTRY = [{id:"honey", n:"Honey", why:"for low energy during training, or with black seed"},{id:"blackseed", n:"Black seed (حبة سوداء)", why:"a pinch with honey in the morning"},{id:"salt", n:"Salt", why:"for the cheese brine"}];
 
+/* ============ prices by country ============
+   Each price is per unit in that country's currency. Unit: kg, L, head, or pc (per piece: egg, loaf, cup…).
+   Lebanon: Ministry of Economy survey (Sept 2026) + supermarket sites. Sweden: Numbeo resident averages (Oct 2026).
+   Tap any price in the list to replace it with what the shelf says. */
+const COUNTRIES = {
+  LB:{name:"Lebanon", flag:"🇱🇧", cur:"USD", src:"Lebanon's Ministry of Economy survey (Sept 2026) and supermarket sites; vegetable shops are usually cheaper"},
+  SE:{name:"Sweden", flag:"🇸🇪", cur:"SEK", src:"Numbeo resident averages for Sweden (Oct 2026); Willys and Lidl are usually cheaper than ICA and Coop"}
+};
+const PRICES = {
+  LB:{tomato:0.88, cucumber:1.06, carrot:1.05, lettuce:0.87, zucchini:0.99, eggplant:0.95, cabbage:0.45, greenbeans:1.66, onion:0.58, potato:0.69,
+      banana:1.37, orange:1.26, pear:1.36, apple:2.21, mandarin:2.79, grapes:4.07, strawberry:12.55},
+  SE:{tomato:43.42, potato:17.12, onion:16.17, lettuce:23.35, banana:25.75, orange:29.92, apple:30.53,
+      chickenbreast:117.03, meat:190.21, eggs:3.48, milk:16.27, rice:35.82}
+};
+const FX_FALLBACK = 1/10.2; // USD per SEK, used until the live rate loads
+function unitOfItem(it){ if(it.id === "lettuce") return "head"; if(it.count) return "pc"; if(it.ml) return "L"; return "kg"; }
+function unitLabel(it){ const u = unitOfItem(it); return u === "pc" ? (it.pn || "piece") : u; }
+function qtyInUnit(it, servings){
+  const u = unitOfItem(it);
+  if(u === "head") return Math.ceil(servings * it.g / it.piece - 1e-9);
+  if(u === "pc") return Math.ceil(servings * it.count - 1e-9);
+  if(u === "L") return servings * it.ml / 1000;
+  return servings * it.g / 1000;
+}
+
 const EMOJI = {tomato:"🍅",cucumber:"🥒",carrot:"🥕",lettuce:"🥬",pepper:"🫑",cherry:"🍅",zucchini:"🥒",eggplant:"🍆",okra:"🌿",cabbage:"🥬",greenbeans:"🫛",onion:"🧅",potato:"🥔",
   banana:"🍌",orange:"🍊",pear:"🍐",apple:"🍎",mandarin:"🍊",grapes:"🍇",strawberry:"🍓",eggs:"🥚",foul:"🫘",chickenbreast:"🍗",chickenthigh:"🍗",fish:"🐟",meat:"🥩",
   halloumi:"🧀",nabulsi:"🧀",akkawi:"🧀",feta:"🧀",milk:"🥛",laban:"🥛",yogurt:"🥛",brownbread:"🫓",toast:"🍞",rice:"🍚",pasta:"🍝",bulgur:"🌾",ricecakes:"🍘",
@@ -243,7 +289,9 @@ const emo = (id, cat) => EMOJI[id] || (CAT_STYLE[cat] || CAT_STYLE.Other).e;
 /* ============ state ============ */
 const KEY = "groceries-v1";
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {} }catch(e){ return {} } }
-let st = Object.assign({days:7, training:4, perDay:{}, shares:{}, out:{}, got:{}, custom:[], hidden:{}, prices:true, moveTo:{}}, load());
+let st = Object.assign({days:7, training:4, perDay:{}, shares:{}, out:{}, got:{}, custom:[], hidden:{}, prices:true, moveTo:{}, country:"LB", myPrices:{LB:{}, SE:{}}, fx:null}, load());
+if(!st.myPrices) st.myPrices = {LB:{}, SE:{}};
+["LB","SE"].forEach(c => { if(!st.myPrices[c]) st.myPrices[c] = {} });
 if(!st.moveTo) st.moveTo = {};
 let query = "";
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(st)) }catch(e){} }
@@ -317,13 +365,26 @@ function rowQty(r){
   if(r.custom) return {main: r.custom.qty || "", sub: r.custom.note || ""};
   return buyText(r.it, r.servings);
 }
-function rowPrice(r){
-  if(r.custom) return r.custom.usd ? +r.custom.usd : 0;
-  if(r.it.upc && r.it.piece) return r.it.upc * Math.ceil(r.servings * r.it.g / r.it.piece - 1e-9);
-  const q = buyText(r.it, r.servings);
-  if(r.it.usd && q.kg) return r.it.usd * Math.max(q.kg, 0);
-  return 0;
+function fxRate(){ return st.fx && st.fx.rate > 0 ? st.fx.rate : FX_FALLBACK } // USD per 1 SEK
+const CUR = () => COUNTRIES[st.country].cur;
+function convert(amount, from, to){
+  if(from === to) return amount;
+  if(from === "SEK" && to === "USD") return amount * fxRate();
+  if(from === "USD" && to === "SEK") return amount / fxRate();
+  return amount;
 }
+function unitPrice(id){ const mine = st.myPrices[st.country][id]; return mine != null ? +mine : (PRICES[st.country][id] || 0) }
+function rowPrice(r){ // in the current country's currency
+  if(r.custom){ const c = r.custom; const amt = c.price != null ? +c.price : (c.usd ? +c.usd : 0); return convert(amt, c.cur || "USD", CUR()); }
+  const up = unitPrice(r.id); if(!up) return 0;
+  return up * qtyInUnit(r.it, r.servings);
+}
+function money(amount, cur){
+  cur = cur || CUR();
+  if(cur === "SEK") return (amount >= 100 ? Math.round(amount) : amount.toFixed(amount >= 10 ? 0 : 2)) + " kr";
+  return "$" + amount.toFixed(2);
+}
+function moneyBoth(amount){ return CUR() === "SEK" ? money(amount)+" ≈ "+money(convert(amount,"SEK","USD"),"USD") : money(amount) }
 
 /* ============ views ============ */
 function render(){
@@ -345,7 +406,7 @@ function renderList(){
   const pct = active.length ? got/active.length : 0, C = 2*Math.PI*18;
   $("#app").className = "app list";
   $("#app").innerHTML = `
-    <header class="top"><div><div class="brand">Groceries</div><div class="muted small">${st.days} days from your meal plan</div></div><a class="back" href="https://alhaiqi.github.io/gym/">Gym Log</a></header>
+    <header class="top"><div><div class="brand">Groceries</div><div class="muted small">${st.days} days from your meal plan</div></div><button class="pill" data-act="country" aria-label="Country and currency: ${COUNTRIES[st.country].name}. Tap to switch">${COUNTRIES[st.country].flag} ${CUR()}</button></header>
     <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="search" placeholder="Find an item" value="${esc(query)}" aria-label="Find an item"></label>
     <nav class="chips" aria-label="Categories">${cats.map(([c, l]) => { const a = l.filter(r => !r.out), g = a.filter(r => st.got[r.id]).length;
       return `<button class="chip ${g === a.length && a.length ? "full" : ""}" data-jump="${esc(c)}" style="--tint:${tint(c)}"><span class="e">${(CAT_STYLE[c] || CAT_STYLE.Other).e}</span>${esc(c)} <span class="c">${g}/${a.length}</span></button>` }).join("")}</nav>
@@ -355,10 +416,10 @@ function renderList(){
     ${!q ? `<section class="sec"><div class="sec-h"><h2>Check you still have</h2></div>${PANTRY.map(p => `<button class="row2 ${st.got[p.id] ? "got" : ""}" data-got="${p.id}" style="--tint:${tint("Pantry")}" aria-pressed="${!!st.got[p.id]}"><span class="tile">${emo(p.id,"Pantry")}<span class="tick">${TICK}</span></span><span><span class="nm">${esc(p.n)}</span><span class="mt" style="display:block">${esc(p.why)}</span></span><span></span></button>`).join("")}</section>` : ""}
     ${doneRows.length ? `<section class="sec done-h"><div class="sec-h"><h2>In the basket</h2><span class="muted small">${doneRows.length}</span></div>${doneRows.map(r => rowHTML(r)).join("")}</section>` : ""}
     <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="pill" data-act="newweek">New week</button><button class="pill" data-view="plan">Change my plan</button></div>
-    <p class="muted small" style="margin:14px 2px 0">Prices are rough estimates from Lebanon's Ministry of Economy survey (Sept 2026) and supermarket sites; vegetable shops are usually cheaper.</p>
+    <p class="muted small" style="margin:14px 2px 0">Prices: ${COUNTRIES[st.country].src}. Tap a price to type in what the shelf says.${st.country === "SE" ? " Dollar amounts use "+(st.fx && !st.fx.manual ? "today's rate (1 kr = $"+fxRate().toFixed(4)+", "+esc(st.fx.date)+")" : st.fx && st.fx.manual ? "your rate (1 kr = $"+fxRate().toFixed(4)+")" : "an estimated rate until today's loads")+"." : ""}</p>
     <div class="basket"><div class="in">
       <svg class="ring" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="18" fill="none" stroke="currentColor" stroke-opacity=".2" stroke-width="5"/><circle cx="22" cy="22" r="18" fill="none" stroke="var(--green)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-pct)).toFixed(1)}" transform="rotate(-90 22 22)"/></svg>
-      <div class="t"><b>${got} of ${active.length} in the basket</b><span>${st.prices ? "About $"+cost.toFixed(2)+" priced so far" : st.days+" days of food"}</span></div>
+      <div class="t"><b>${got} of ${active.length} in the basket</b><span>${st.prices ? "About "+moneyBoth(cost)+" priced so far" : st.days+" days of food"}</span></div>
       <button data-act="share">Share</button></div></div>`;
 }
 const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 12l5 5 9-10"/></svg>';
@@ -374,7 +435,7 @@ function rowHTML(r){
   return `<div class="row2 ${st.got[r.id] && !r.out ? "got" : ""} ${r.out ? "out" : ""}" style="--tint:${tint(r.cat)}" ${r.out ? "" : `data-got="${r.id}" role="button" tabindex="0" aria-pressed="${!!st.got[r.id]}"`} aria-label="${esc(r.n)}, ${esc(q.main)}">
     <span class="tile">${emo(r.custom ? "" : r.outKey, r.cat)}<span class="tick">${TICK}</span></span>
     <span style="min-width:0"><span class="nm" style="display:block">${esc(r.n)}</span>${meta}${multi ? `<button class="swapbtn" data-swap="${r.outKey}">${r.out ? "Found it after all" : r.custom ? "Not available" : "Swap"}</button>` : ""}</span>
-    ${r.out ? "<span></span>" : `<span class="qp"><b>${esc(q.main)}</b>${q.sub || (st.prices && p) ? `<small>${esc(q.sub || "")}${q.sub && st.prices && p ? ", " : ""}${st.prices && p ? "$"+p.toFixed(2) : ""}</small>` : ""}</span>`}
+    ${r.out ? "<span></span>" : `<span class="qp"><b>${esc(q.main)}</b>${q.sub ? `<small>${esc(q.sub)}</small>` : ""}${st.prices ? `<button class="pricebtn ${p ? "" : "add"}" data-price="${r.id}" aria-label="${p ? "Price "+esc(moneyBoth(p))+". Tap to change" : "Add the shelf price"}">${p ? esc(money(p))+(CUR() === "SEK" ? `<i>≈ ${esc(money(convert(p,"SEK","USD"),"USD"))}</i>` : "") : "+ price"}</button>` : ""}</span>`}
   </div>`;
 }
 function swapSheet(itemId){
@@ -391,6 +452,38 @@ function swapSheet(itemId){
     <button class="cta2" data-close>Cancel</button>`;
   $("#sheetBg").classList.remove("hide");
 }
+function priceSheet(id){
+  const r = buildList().find(x => x.id === id); if(!r) return;
+  const sek = CUR() === "SEK";
+  if(r.custom){
+    const c = r.custom, amt = c.price != null ? +c.price : (+c.usd || 0);
+    $("#sheet").innerHTML = `<div class="grab"></div><h2>${esc(c.n)}</h2><p class="muted small" style="margin:4px 0 0">Price for ${esc(c.qty || "the amount you buy")}.</p>
+      <label class="pfield"><input id="pIn" inputmode="decimal" value="${amt ? r1(convert(amt, c.cur || "USD", CUR())) : ""}" placeholder="0"><span>${sek ? "kr" : "$"}</span></label>
+      <div class="pconv" id="pConv"></div>
+      <button class="cta" data-saveprice="${id}" data-custom="1">Save price</button><button class="cta2" data-close>Cancel</button>`;
+  } else {
+    const it = r.it, u = unitLabel(it), mine = st.myPrices[st.country][id], est = PRICES[st.country][id];
+    const qty = qtyInUnit(it, r.servings);
+    $("#sheet").innerHTML = `<div class="grab"></div><h2>${emo(id, r.cat)} ${esc(r.n)}</h2>
+      <p class="muted small" style="margin:4px 0 0">Type the price on the shelf tag, per ${esc(u)}. ${sek ? "Swedish tags show <b>kr/kg</b> (jämförpris) or <b>kr/st</b> per piece." : ""}</p>
+      <label class="pfield"><input id="pIn" inputmode="decimal" value="${mine != null ? mine : (est || "")}" placeholder="0"><span>${sek ? "kr" : "$"} / ${esc(u)}</span></label>
+      <div class="pconv" id="pConv" data-qty="${qty}" data-unit="${esc(u)}"></div>
+      <p class="muted small" style="margin:6px 0 0">${mine != null ? "Your price." : est ? "This is an estimate ("+esc(COUNTRIES[st.country].name)+" average)." : "No estimate for this item yet."}</p>
+      <button class="cta" data-saveprice="${id}">Save price</button>
+      ${mine != null ? `<button class="cta2" data-resetprice="${id}">${est ? "Use the estimate again" : "Clear my price"}</button>` : `<button class="cta2" data-close>Cancel</button>`}`;
+  }
+  $("#sheetBg").classList.remove("hide");
+  updateConv(); setTimeout(() => { const i = document.getElementById("pIn"); if(i){ i.focus(); i.select(); } }, 60);
+}
+function updateConv(){
+  const i = document.getElementById("pIn"), o = document.getElementById("pConv"); if(!i || !o) return;
+  const v = parseFloat(String(i.value).replace(",", ".")) || 0, sek = CUR() === "SEK";
+  const qty = parseFloat(o.dataset.qty || "0"), u = o.dataset.unit;
+  let html = "";
+  if(sek && v) html += `<b>${esc(v.toFixed(2))} kr${u ? " / "+esc(u) : ""} = ${esc(money(convert(v,"SEK","USD"),"USD"))}${u ? " / "+esc(u) : ""}</b>`;
+  if(qty && v) html += `<span>This week (${r1(qty)} ${esc(u)}): ${esc(moneyBoth(v*qty))}</span>`;
+  o.innerHTML = html;
+}
 function nextAlt(r){
   const g = r.groups[0], i = g.items.findIndex(x => x.id === r.outKey);
   const pick = g.items.find(x => x.id === st.moveTo[r.outKey] && !st.out[x.id]); if(pick) return pick.n;
@@ -403,7 +496,15 @@ function renderPlan(){
     <section class="panel">
       <div class="field"><label>Days to shop for<small>Usually 7</small></label>${stepper("days", st.days, 1)}</div>
       <div class="field"><label>Training days this week<small>Sets the laban cups</small></label>${stepper("training", st.training, 1)}</div>
-      <div class="field"><label>Show price estimates</label><button class="pill" data-act="prices">${st.prices ? "On" : "Off"}</button></div>
+      <div class="field"><label>Show prices</label><button class="pill" data-act="prices">${st.prices ? "On" : "Off"}</button></div>
+    </section>
+    <section class="panel"><h3>Where you shop</h3>
+      <div class="seg2" role="group" aria-label="Country">${Object.entries(COUNTRIES).map(([k,c]) => `<button data-setcountry="${k}" aria-pressed="${st.country === k}">${c.flag} ${c.name} · ${c.cur}</button>`).join("")}</div>
+      <p class="muted small" style="margin:8px 0 6px">Each country keeps its own prices. Your plan, ticks and swaps stay the same.</p>
+      ${st.country === "SE" ? `<div class="field"><label>Exchange rate<small>${st.fx && st.fx.manual ? "Set by you" : st.fx ? "Live rate from "+esc(st.fx.date)+" (European Central Bank)" : "Estimated; the live rate loads when you're online"}</small></label>
+          <div class="fx">1 kr = $<input data-fx inputmode="decimal" value="${fxRate().toFixed(4)}" aria-label="US dollars per Swedish krona"></div></div>
+        ${st.fx && st.fx.manual ? `<button class="link" data-act="fxlive">Use the live rate again</button>` : ""}
+        <div class="conv"><label for="convIn">Price tag converter</label><div class="convrow"><input id="convIn" inputmode="decimal" placeholder="e.g. 34.90"><span>kr</span><b id="convOut">= $0.00</b></div></div>` : ""}
     </section>
     ${GROUPS.map(g => {
       const multi = g.items.length > 1, total = weekServings(g), sum = g.items.reduce((a,it) => a + Math.max(0, shareOf(g,it)), 0);
@@ -423,7 +524,7 @@ function renderAdd(){
     <section class="panel"><p class="muted small" style="margin:0">For anything outside the plan, like shampoo, coffee or a treat. It stays on the list every week until you remove it in My plan.</p>
       <form class="form" id="addForm">
         <input name="n" required placeholder="Item, e.g. Coffee" aria-label="Item name">
-        <div class="two"><input name="qty" placeholder="Amount, e.g. 1 pack" aria-label="Amount"><input name="usd" inputmode="decimal" placeholder="Price $ (optional)" aria-label="Price in dollars"></div>
+        <div class="two"><input name="qty" placeholder="Amount, e.g. 1 pack" aria-label="Amount"><input name="price" inputmode="decimal" placeholder="Price ${CUR() === "SEK" ? "kr" : "$"} (optional)" aria-label="Price in ${CUR() === "SEK" ? "kronor" : "dollars"}"></div>
         <select name="cat" aria-label="Category">${CATS.map(c => `<option>${c}</option>`).join("")}<option>Other</option></select>
         <input name="note" placeholder="Note (optional)" aria-label="Note">
         <button class="cta" type="submit">Add to the list</button>
@@ -469,11 +570,22 @@ document.addEventListener("click", ev => {
     }
     render(); return;
   }
+  if(d.price){ priceSheet(d.price); return; }
+  if(d.saveprice){
+    const v = parseFloat(String(document.getElementById("pIn").value).replace(",", "."));
+    if(d.custom){ const c = st.custom.find(x => x.id === d.saveprice); if(c){ c.price = isFinite(v) ? v : 0; c.cur = CUR(); delete c.usd; } }
+    else if(isFinite(v) && v >= 0) st.myPrices[st.country][d.saveprice] = v;
+    closeSheet(); render(); toast("Price saved."); return;
+  }
+  if(d.resetprice){ delete st.myPrices[st.country][d.resetprice]; closeSheet(); render(); return; }
+  if(d.setcountry){ st.country = d.setcountry; if(st.country === "SE") loadFx(); render(); toast("Prices in "+COUNTRIES[st.country].cur+"."); return; }
   if(d.inc || d.dec){ const key = d.inc || d.dec; setKey(key, curVal(key) + (d.inc ? 1 : -1) * (+d.step)); render(); return; }
   if(d.delc){ st.custom = st.custom.filter(c => c.id !== d.delc); render(); return; }
   switch(d.act){
     case "newweek": if(confirm("Start a new week? This unchecks everything and marks all items as available again.")){ st.got = {}; st.out = {}; st.moveTo = {}; render(); toast("New week. Everything's back on the list."); } break;
     case "hidegot": st.hideGot = !st.hideGot; render(); break;
+    case "country": st.country = st.country === "LB" ? "SE" : "LB"; if(st.country === "SE") loadFx(); render(); toast(COUNTRIES[st.country].flag+" "+COUNTRIES[st.country].name+": prices in "+CUR()+"."); break;
+    case "fxlive": st.fx = null; loadFx(true); render(); break;
     case "prices": st.prices = !st.prices; render(); break;
     case "reset": if(confirm("Reset amounts and mixes to the doctor's plan? Your extra items stay.")){ st.perDay = {}; st.shares = {}; st.days = 7; st.training = 4; render(); } break;
     case "share": {
@@ -486,17 +598,33 @@ document.addEventListener("click", ev => {
   }
 });
 function closeSheet(){ document.getElementById("sheetBg").classList.add("hide") }
-document.addEventListener("input", ev => { if(ev.target.id === "q"){ query = ev.target.value; const pos = ev.target.selectionStart; render(); const i = document.getElementById("q"); i.focus(); try{ i.setSelectionRange(pos,pos) }catch(e){} } });
+document.addEventListener("input", ev => {
+  if(ev.target.id === "pIn"){ updateConv(); return; }
+  if(ev.target.id === "convIn"){ const v = parseFloat(String(ev.target.value).replace(",", ".")) || 0; document.getElementById("convOut").textContent = "= "+money(convert(v,"SEK","USD"),"USD"); return; }
+  if(ev.target.id === "q"){ query = ev.target.value; const pos = ev.target.selectionStart; render(); const i = document.getElementById("q"); i.focus(); try{ i.setSelectionRange(pos,pos) }catch(e){} } });
 document.addEventListener("keydown", ev => { if(ev.key === "Escape") closeSheet(); if((ev.key === "Enter" || ev.key === " ") && ev.target.matches && ev.target.matches(".row2[data-got]")){ ev.preventDefault(); ev.target.click(); } });
-document.addEventListener("change", ev => { const k = ev.target.dataset && ev.target.dataset.key; if(k){ setKey(k, parseFloat(ev.target.value) || 0); render(); } });
+document.addEventListener("change", ev => {
+  if(ev.target.hasAttribute && ev.target.hasAttribute("data-fx")){ const v = parseFloat(String(ev.target.value).replace(",", ".")); if(v > 0 && v < 1){ st.fx = {rate:v, manual:true, date:new Date().toISOString().slice(0,10)}; render(); toast("Rate saved."); } else toast("Enter dollars per 1 krona, like 0.098."); return; }
+  const k = ev.target.dataset && ev.target.dataset.key; if(k){ setKey(k, parseFloat(ev.target.value) || 0); render(); } });
 document.addEventListener("submit", ev => {
   if(ev.target.id !== "addForm") return; ev.preventDefault();
   const f = new FormData(ev.target), n = (f.get("n") || "").trim(); if(!n) return;
-  st.custom.push({id:"c"+Date.now(), n, qty:(f.get("qty") || "").trim(), usd:parseFloat(f.get("usd")) || 0, cat:f.get("cat"), note:(f.get("note") || "").trim()});
+  st.custom.push({id:"c"+Date.now(), n, qty:(f.get("qty") || "").trim(), price:parseFloat(String(f.get("price") || "").replace(",", ".")) || 0, cur:CUR(), cat:f.get("cat"), note:(f.get("note") || "").trim()});
   save(); toast(n+" added to the list."); view = "list"; render();
 });
 if("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
 try{ const th = localStorage.getItem("gymlog-theme"); if(th) document.documentElement.dataset.theme = th }catch(e){}
+/* live exchange rate (European Central Bank via Frankfurter), refreshed every 12 hours */
+async function loadFx(force){
+  if(st.fx && st.fx.manual && !force) return;
+  if(!force && st.fx && st.fx.fetched && Date.now() - st.fx.fetched < 12*3600*1000) return;
+  try{
+    const r = await fetch("https://api.frankfurter.app/latest?from=SEK&to=USD");
+    const j = await r.json();
+    if(j && j.rates && j.rates.USD > 0){ st.fx = {rate:j.rates.USD, date:j.date, fetched:Date.now(), manual:false}; save(); render(); }
+  }catch(e){}
+}
+if(st.country === "SE") loadFx();
 if(location.hash === "#plan") view = "plan";
 render();
 </script>
